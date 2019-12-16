@@ -269,6 +269,63 @@ func TestSumDeltas(t *testing.T) {
 	}
 }
 
+func TestSumDeltasUpToPoint(t *testing.T) {
+	testCases := []struct {
+		input Segments
+		point int64
+		want  int64
+	}{
+		{
+			input: Segments{
+				Segment{2, 4},
+				Segment{1, 3},
+				Segment{5, 7},
+			},
+			point: 6,
+			want:  3 + 1,
+		},
+		{
+			input: Segments{
+				Segment{2, 4},
+				Segment{1, 3},
+				Segment{5, 7},
+			},
+			point: 3,
+			want:  2,
+		},
+		{
+			input: Segments{
+				Segment{2, 4},
+				Segment{1, 3},
+				Segment{5, 7},
+			},
+			point: 10,
+			want:  3 + 2,
+		},
+		{
+			input: Segments{
+				Segment{2, 4},
+			},
+			point: 2,
+			want:  0,
+		},
+		{
+			input: Segments{
+				Segment{-2, -1},
+				Segment{2, 4},
+			},
+			point: 0,
+			want:  1,
+		},
+	}
+
+	for _, test := range testCases {
+		if got := SumDeltasUpToPoint(test.input, test.point); got != test.want {
+			t.Errorf("SumDeltasUpToPoint(%s, %d) = %d, should be %d", test.input, test.point, got, test.want)
+		}
+	}
+}
+
 func TestSegmentsWithPredicate(t *testing.T) {
 	testCases := []struct {
 		predicateDescription string
