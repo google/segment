@@ -89,6 +89,35 @@ func (s *Segment) UpdateEnd(end int64) error {
 	return fmt.Errorf("new end < existing start: segment end not updated")
 }
 
+// LinearTransform performs a linear transformation on a segment.
+// If the multiplier is negative, the resulting segment will not be well-defined,
+// so the linear transform is not performed on the segment.
+// The coefficients of the linear transformation are float64, so the output
+// will be rounded as per package :float.
+func (s *Segment) LinearTransform(a, b float64) error {
+	if a < 0 {
+		return fmt.Errorf("a < 0: linear transform not performed on segment")
+	}
+	start, end := float64(s.start)*a+b, float64(s.end)*a+b
+	s.Update(int64(math.Round(start)), int64(math.Round(end)))
+	return nil
+}
+
+// LinearTransform performs a linear transformation on a slice of segments.
+// If the multiplier is negative, the resulting segments will not be well-defined,
+// so the linear transform is not performed on ANY of the segments.
+// The coefficients of the linear transformation are float64, so all segments
+// will be rounded as per package :float.
+func (ss Segments) LinearTransform(a, b float64) error {
+	if a < 0 {
+		return fmt.Errorf("a < 0: linear transform not performed on any segment")
+	}
+	for i := range ss {
+		ss[i].LinearTransform(a, b)
+	}
+	return nil
+}
+
 //////// EXTRACT SEGMENT VALUES/CHARACTERISTICS ////////
 
 // Start returns the start of a segment.
