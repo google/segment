@@ -188,6 +188,100 @@ func TestUpdateEnd(t *testing.T) {
 	}
 }
 
+func TestStarts(t *testing.T) {
+	testCases := []struct {
+		input Segments
+		want  []int64
+	}{
+		{
+			input: Segments{
+				Segment{2, 3},
+				Segment{1, 2},
+				Segment{4, 5},
+			},
+			want: []int64{2, 1, 4},
+		},
+		{
+			input: Segments{
+				Segment{0, 1},
+				Segment{-1, 5},
+				Segment{4, 6},
+			},
+			want: []int64{0, -1, 4},
+		},
+		{
+			input: Segments{
+				Segment{3, 3},
+				Segment{4, 5},
+			},
+			want: []int64{3, 4},
+		},
+		{
+			input: Segments{},
+			want:  nil,
+		},
+		{
+			input: Segments{
+				Segment{0, 0},
+			},
+			want: []int64{0},
+		},
+	}
+
+	for _, test := range testCases {
+		if got := test.input.Starts(); !reflect.DeepEqual(got, test.want) {
+			t.Errorf("%s.Starts() = %v, should be %v", test.input, got, test.want)
+		}
+	}
+}
+
+func TestEnds(t *testing.T) {
+	testCases := []struct {
+		input Segments
+		want  []int64
+	}{
+		{
+			input: Segments{
+				Segment{2, 3},
+				Segment{1, 2},
+				Segment{4, 5},
+			},
+			want: []int64{3, 2, 5},
+		},
+		{
+			input: Segments{
+				Segment{0, 1},
+				Segment{-1, 5},
+				Segment{4, 6},
+			},
+			want: []int64{1, 5, 6},
+		},
+		{
+			input: Segments{
+				Segment{3, 3},
+				Segment{4, 5},
+			},
+			want: []int64{3, 5},
+		},
+		{
+			input: Segments{},
+			want:  nil,
+		},
+		{
+			input: Segments{
+				Segment{0, 0},
+			},
+			want: []int64{0},
+		},
+	}
+
+	for _, test := range testCases {
+		if got := test.input.Ends(); !reflect.DeepEqual(got, test.want) {
+			t.Errorf("%s.Ends() = %v, should be %v", test.input, got, test.want)
+		}
+	}
+}
+
 func TestDelta(t *testing.T) {
 	testCases := []struct {
 		input Segment
