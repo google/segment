@@ -188,6 +188,85 @@ func TestUpdateEnd(t *testing.T) {
 	}
 }
 
+func TestSegmentLinearTransform(t *testing.T) {
+	testCases := []struct {
+		s, want Segment
+		a, b    float64
+		wanterr bool
+	}{
+		{
+			s:       Segment{1, 2},
+			a:       0.1,
+			b:       2.3,
+			want:    Segment{2, 3},
+			wanterr: false,
+		},
+		{
+			s:       Segment{1, 2},
+			a:       -0.1,
+			b:       2.3,
+			want:    Segment{1, 2},
+			wanterr: true,
+		},
+	}
+
+	for _, test := range testCases {
+		sCopy := Segment{test.s.start, test.s.end}
+		goterr := test.s.LinearTransform(test.a, test.b)
+		if test.s != test.want || (goterr != nil) != test.wanterr {
+			t.Errorf("%s.LinearTransform(%.2f, %.2f) = %s, should be %s; got error? %t, want error? %t",
+				sCopy, test.a, test.b, test.s, test.want, goterr != nil, test.wanterr)
+		}
+	}
+}
+
+func TestSegmentsLinearTransform(t *testing.T) {
+	testCases := []struct {
+		ss, want Segments
+		a, b     float64
+		wanterr  bool
+	}{
+		{
+			ss: Segments{
+				Segment{1, 2},
+				Segment{-2, -1},
+			},
+			a: 0.1,
+			b: 2.3,
+			want: Segments{
+				Segment{2, 3},
+				Segment{2, 2},
+			},
+			wanterr: false,
+		},
+		{
+			ss: Segments{
+				Segment{1, 2},
+				Segment{-2, -1},
+			},
+			a: -0.1,
+			b: 2.3,
+			want: Segments{
+				Segment{1, 2},
+				Segment{-2, -1},
+			},
+			wanterr: true,
+		},
+	}
+
+	for _, test := range testCases {
+		var ssCopy Segments
+		for _, s := range test.ss {
+			ssCopy = append(ssCopy, Segment{s.start, s.end})
+		}
+		goterr := test.ss.LinearTransform(test.a, test.b)
+		if !reflect.DeepEqual(test.ss, test.want) || (goterr != nil) != test.wanterr {
+			t.Errorf("%s.LinearTransform(%.2f, %.2f) = %s, should be %s; got error? %t, want error? %t",
+				ssCopy, test.a, test.b, test.ss, test.want, goterr != nil, test.wanterr)
+		}
+	}
+}
+
 func TestDelta(t *testing.T) {
 	testCases := []struct {
 		input Segment
