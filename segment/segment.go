@@ -138,6 +138,22 @@ func (ss Segments) SumDeltas() int64 {
 	return output
 }
 
+// SumDeltasUpToPoint returns the sum of segments length below point.
+func SumDeltasUpToPoint(ss Segments, point int64) int64 {
+	var output int64
+	for _, s := range RemoveOverlaps(ss) {
+		if point >= s.end {
+			output += s.Delta()
+		} else {
+			if point > s.start {
+				output += point - s.start
+			}
+			break
+		}
+	}
+	return output
+}
+
 // SegmentsWithPredicate returns a subset of segments that meet a predicate function.
 func SegmentsWithPredicate(ss Segments, pred func(s Segment) bool) Segments {
 	var output Segments
